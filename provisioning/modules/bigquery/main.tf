@@ -1,5 +1,5 @@
 locals {
-  region = "europe-west4"
+  region  = "europe-west4"
   project = "stream-machine-development"
 }
 
@@ -75,6 +75,35 @@ resource "google_secret_manager_secret" "bigquery_service_account_key" {
 }
 
 resource "google_secret_manager_secret_version" "bigquery_service_account_key_version" {
-  secret = google_secret_manager_secret.bigquery_service_account_key.name
+  secret      = google_secret_manager_secret.bigquery_service_account_key.name
   secret_data = file("sa-key.json")
+}
+
+resource "google_bigquery_dataset" "principal_check_routines" {
+  dataset_id = "principal_check_routines"
+  project    = local.project
+  location = local.region
+}
+
+resource "google_bigquery_job" "job" {
+  job_id     = "create_principal_check_routine_${formatdate("YYYYMMDDhhmmss", timestamp())}"
+  project = local.project
+  location = local.region
+
+  labels = {
+    "example-label" ="create-principal-check-routine"
+  }
+
+  query {
+    create_disposition = ""
+    write_disposition  = ""
+    query = <<EOT
+  CREATE or replace FUNCTION `${local.project}`.${google_bigquery_dataset.principal_check_routines.dataset_id}.check_principal_access(x STRING) RETURNS STRING
+REMOTE WITH CONNECTION `${local.project}.${local.region}.${google_cloudfunctions2_function.check_principal_access.name}`
+OPTIONS (
+  endpoint = '${google_cloudfunctions2_function.check_principal_access.url}'
+);
+EOT
+
+  }
 }
