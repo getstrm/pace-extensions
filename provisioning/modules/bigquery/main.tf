@@ -82,28 +82,27 @@ resource "google_secret_manager_secret_version" "bigquery_service_account_key_ve
 resource "google_bigquery_dataset" "principal_check_routines" {
   dataset_id = "principal_check_routines"
   project    = local.project
-  location = local.region
+  location   = local.region
 }
 
 resource "google_bigquery_job" "job" {
-  job_id     = "create_principal_check_routine_${formatdate("YYYYMMDDhhmmss", timestamp())}"
-  project = local.project
+  job_id   = "create_principal_check_routine_${formatdate("YYYYMMDDhhmmss", timestamp())}"
+  project  = local.project
   location = local.region
 
   labels = {
-    "example-label" ="create-principal-check-routine"
+    "example-label" = "create-principal-check-routine"
   }
 
   query {
     create_disposition = ""
     write_disposition  = ""
-    query = <<EOT
+    query              = <<EOT
   CREATE or replace FUNCTION `${local.project}`.${google_bigquery_dataset.principal_check_routines.dataset_id}.check_principal_access(x STRING) RETURNS STRING
 REMOTE WITH CONNECTION `${local.project}.${local.region}.${google_cloudfunctions2_function.check_principal_access.name}`
 OPTIONS (
   endpoint = '${google_cloudfunctions2_function.check_principal_access.url}'
 );
 EOT
-
   }
 }
