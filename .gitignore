@@ -1,7 +1,9 @@
 /.idea/
+.envrc
 
 .terraform
 terraform.tfvars
+function-source.zip
 
 .serviceaccounts/*.json
 *.tfstate*
