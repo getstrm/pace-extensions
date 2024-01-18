@@ -21,22 +21,22 @@ def check_principal_access(request):
 
     match principal_type:
         case 'group':
-            hasAccess = check_group_principal(principal, current_user)
+            has_access = check_group_principal(principal, current_user)
         case 'role':
-            hasAccess = check_roles_or_permissions_principal(principal, current_user, 'roles')
+            has_access = check_roles_or_permissions_principal(principal, current_user, 'roles')
         case 'permission':
-            hasAccess = check_roles_or_permissions_principal(principal, current_user, 'permissions')
-        case default:
-            hasAccess = check_group_principal(principal, current_user)
+            has_access = check_roles_or_permissions_principal(principal, current_user, 'permissions')
+        case _:
+            has_access = check_group_principal(principal, current_user)
 
-    return json.dumps({"replies": [f"{hasAccess}"]})
+    return json.dumps({"replies": [f"{has_access}"]})
 
 
 def check_group_principal(group, current_user):
-    SCOPES = ['https://www.googleapis.com/auth/cloud-identity.groups']
+    scopes = ['https://www.googleapis.com/auth/cloud-identity.groups']
 
     credentials = service_account.Credentials.from_service_account_info(
-        json.loads(os.environ['SERVICE_ACCOUNT_KEY']), scopes=SCOPES)
+        json.loads(os.environ['SERVICE_ACCOUNT_KEY']), scopes=scopes)
 
     service = googleapiclient.discovery.build('cloudidentity', 'v1', credentials=credentials)
     param = "&groupKey.id=" + group
@@ -62,8 +62,8 @@ def check_roles_or_permissions_principal(role_or_permission, current_user,
         headers={"Authorization": f"Bearer {access_token}"})
 
     try:
-        hasAccess = len(response.json()['mainAnalysis']['analysisResults']) > 0
-        return hasAccess
+        has_access = len(response.json()['mainAnalysis']['analysisResults']) > 0
+        return has_access
     except:
         logging.error(response.json())
         return False
