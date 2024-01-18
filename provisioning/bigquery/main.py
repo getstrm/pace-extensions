@@ -37,11 +37,8 @@ def check_group_principal(group, current_user):
 
     credentials = service_account.Credentials.from_service_account_info(
         json.loads(os.environ['SERVICE_ACCOUNT_KEY']), scopes=SCOPES)
-    delegated_credentials = credentials.with_subject(
-        'dps-bigquery-poc@stream-machine-development.iam.gserviceaccount.com')
 
-    service = googleapiclient.discovery.build('cloudidentity', 'v1',
-                                              credentials=delegated_credentials)
+    service = googleapiclient.discovery.build('cloudidentity', 'v1', credentials=credentials)
     param = "&groupKey.id=" + group
     try:
         lookup_group_name_request = service.groups().lookup()
