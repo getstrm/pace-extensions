@@ -60,7 +60,8 @@ provider "registry.terraform.io/hashicorp/google-beta" {
 }
 
 provider "registry.terraform.io/hashicorp/googleworkspace" {
-  version = "0.7.0"
+  version     = "0.7.0"
+  constraints = "0.7.0"
   hashes = [
     "h1:CCBixim5kETOkLHmJKC2dmqAsF2Z7aNFff2waQ83uC4=",
     "zh:0fef459a2ac51ad30fb5b31ca8b39f3004fe7ae58d03ec1910d83fe8d98e077e",
