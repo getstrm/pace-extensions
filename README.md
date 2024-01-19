@@ -2,14 +2,22 @@
 
 ## BigQuery IAM
 
-includes:
+Includes:
 
 - provisioning for a `google_bigquery_connection` using terraform
 - cloud function udf for bigquery to check permissions, with service account key mounted as secret
   from `Secret Manager`
 
-### instructions
+### Instructions
 The BigQuery IAM Check requires a super-admin account to apply. First step is to "trust" the Google Auth Library. Go to [admin console](https://admin.google.com/ac/owl/list?tab=configuredApps). Click `Add App` and select based on Client-ID. The corresponding app-id is `764086051850-6qr4p6gpi6hn506pt8ejuq83di341hur.apps.googleusercontent.com`. Complete the wizard to make it a trusted app.
+
+The following APIs need to be enabled:
+- [Admin SDK](https://console.cloud.google.com/apis/library/admin.googleapis.com)
+- [Cloud Asset](https://console.cloud.google.com/apis/library/cloudasset.googleapis.com)
+- [Cloud Functions](https://console.cloud.google.com/apis/library/cloudfunctions.googleapis.com)
+- [Cloud Identity](https://console.cloud.google.com/apis/library/cloudidentity.googleapis.com)
+- [Cloud Resource Manager](https://console.cloud.google.com/apis/library/cloudresourcemanager.googleapis.com)
+- [Secret Manager](https://console.cloud.google.com/apis/library/secretmanager.googleapis.com)
 
 The BigQuery IAM Check makes use of the ADC for Google.
 You need to create oauth credentials for a Desktop application in the Google Cloud Console:
