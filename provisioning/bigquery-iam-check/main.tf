@@ -152,7 +152,7 @@ resource "google_bigquery_job" "job" {
     create_disposition = ""
     write_disposition  = ""
     query              = <<EOT
-  CREATE or replace FUNCTION `${var.project}`.${google_bigquery_dataset.principal_check_routines.dataset_id}.check_principal_access(x STRING) RETURNS STRING
+  CREATE or replace FUNCTION `${var.project}`.${google_bigquery_dataset.principal_check_routines.dataset_id}.check_principal_access(x STRING, y STRING, z STRING) RETURNS STRING
 REMOTE WITH CONNECTION `${var.project}.${var.region}.${google_cloudfunctions2_function.check_principal_access.name}`
 OPTIONS (
   endpoint = '${google_cloudfunctions2_function.check_principal_access.url}'

@@ -17,14 +17,17 @@ def check_principal_access(request):
     except:
         principal_type = ''
         principal = request_json['calls'][0][0]
+    dataset = request_json['calls'][0][1]
+    view = request_json['calls'][0][2]
 
     match principal_type:
         case 'group':
             has_access = groups_check(principal, current_user)
         case 'role':
-            has_access = roles_permissions_check(principal, current_user, 'roles')
+            has_access = roles_permissions_check(principal, current_user, dataset, view, 'roles')
         case 'permission':
-            has_access = roles_permissions_check(principal, current_user, 'permissions')
+            has_access = roles_permissions_check(principal, current_user, dataset, view,
+                                                 'permissions')
         case _:
             has_access = groups_check(principal, current_user)
 
@@ -51,7 +54,7 @@ def groups_check(group, current_user):
     return any([current_user == m['preferredMemberKey']['id'] for m in memberships])
 
 
-def roles_permissions_check(role_or_permission, current_user,
+def roles_permissions_check(role_or_permission, current_user, dataset, view,
                             roles_or_permissions_type="roles"):
     service_account_key = json.loads(os.environ['SERVICE_ACCOUNT_KEY'])
     client = asset_v1.AssetServiceClient().from_service_account_info(service_account_key)
@@ -63,9 +66,13 @@ def roles_permissions_check(role_or_permission, current_user,
     else:
         raise Exception("roles_or_permissions_type must be 'roles' or 'permissions'")
 
+    resource_selector = IamPolicyAnalysisQuery.ResourceSelector(
+        full_resource_name=f"//bigquery.googleapis.com/projects/{service_account_key['project_id']}/datasets/{dataset}/tables/{view}")
+
     query = IamPolicyAnalysisQuery(
         scope=get_organization_id(service_account_key['project_id']),
         access_selector=access_selector,
+        resource_selector=resource_selector,
         identity_selector=IamPolicyAnalysisQuery.IdentitySelector(identity=f"user:{current_user}"),
     )
 

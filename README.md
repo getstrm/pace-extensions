@@ -47,7 +47,7 @@ gcloud auth application-default set-quota-project <YOUR_PROJECT>
 Upon executing `terraform apply`, either enter the correct values for
 the variables or create an .envrc file with the following content beforehand:
 ```bash
-export TF_VAR_region="<REGION>"
+export TF_VAR_region="<REGIN>"
 export TF_VAR_project="<PROJECT>"
 export TF_VAR_organization_id="<ORGANIZATION_ID>"
 export TF_VAR_customer_id="<CUSTOMER_ID>"
