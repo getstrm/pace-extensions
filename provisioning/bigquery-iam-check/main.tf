@@ -161,8 +161,8 @@ EOT
   }
 }
 
-resource "googleworkspace_role" "groups_reader_pace" {
-  name = "Groups Reader Pace"
+resource "googleworkspace_role" "groups_reader_pace_check" {
+  name = "Groups Reader Pace Check"
 
   dynamic "privileges" {
     for_each = local.groups_reader_pace_privileges
@@ -175,7 +175,7 @@ resource "googleworkspace_role" "groups_reader_pace" {
 
 // this is needed as google admin api needs a little time to propagate the id
 resource "time_sleep" "wait_30_seconds" {
-  depends_on = [googleworkspace_role.groups_reader_pace]
+  depends_on = [googleworkspace_role.groups_reader_pace_check]
 
   create_duration = "30s"
 }
@@ -183,6 +183,6 @@ resource "time_sleep" "wait_30_seconds" {
 resource "googleworkspace_role_assignment" "principal_checker_groups_admin" {
   depends_on = [time_sleep.wait_30_seconds, google_organization_iam_member.principal_checker]
 
-  role_id     = googleworkspace_role.groups_reader_pace.id
+  role_id     = googleworkspace_role.groups_reader_pace_check.id
   assigned_to = google_service_account.principal_checker.unique_id
 }
