@@ -17,7 +17,7 @@ def sync_user_groups(request):
 
     memberships = get_memberships(service)
     client = bigquery.Client().from_service_account_info(sa_key)
-    update_user_groups(client, memberships)
+    update_user_groups(client, memberships, sa_key)
     return json.dumps({})
 
 
@@ -32,13 +32,13 @@ def get_memberships(service):
     return memberships
 
 
-def update_user_groups(client, memberships):
+def update_user_groups(client, memberships, sa_key):
     job_config = bigquery.LoadJobConfig(
         write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE,
         source_format=bigquery.SourceFormat.CSV,
     )
     client.load_table_from_dataframe(
         pd.DataFrame(memberships),
-        'stream-machine-development.user_groups.user_groups',
+        '.'.join([sa_key['project_id'], os.environ['USER_GROUPS_DATASET'], os.environ['USER_GROUPS_TABLE']]),
         job_config=job_config
     )

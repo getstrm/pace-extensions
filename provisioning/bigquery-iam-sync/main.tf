@@ -67,14 +67,14 @@ resource "google_bigquery_table" "user_groups_view" {
   table_id   = "user_groups_view"
   project    = var.project
   view {
-    query = "select userEmail, userGroup from `${var.project}.${google_bigquery_dataset.user_groups.dataset_id}.${google_bigquery_table.user_groups.table_id}` where userEmail = SESSION_USER()"
+    query          = "select userEmail, userGroup from `${var.project}.${google_bigquery_dataset.user_groups.dataset_id}.${google_bigquery_table.user_groups.table_id}` where userEmail = SESSION_USER()"
     use_legacy_sql = false
   }
 }
 
 resource "google_bigquery_dataset_access" "view_authorization" {
   dataset_id = google_bigquery_dataset.user_groups.dataset_id
-  project = var.project
+  project    = var.project
   view {
     project_id = google_bigquery_table.user_groups_view.project
     dataset_id = google_bigquery_dataset.user_groups.dataset_id
@@ -83,11 +83,11 @@ resource "google_bigquery_dataset_access" "view_authorization" {
 }
 
 resource "google_bigquery_table_iam_binding" "binding" {
-  project = google_bigquery_table.user_groups_view.project
+  project    = google_bigquery_table.user_groups_view.project
   dataset_id = google_bigquery_table.user_groups_view.dataset_id
-  table_id = google_bigquery_table.user_groups_view.table_id
-  role = "roles/bigquery.dataViewer"
-  members = [
+  table_id   = google_bigquery_table.user_groups_view.table_id
+  role       = "roles/bigquery.dataViewer"
+  members    = [
     "allAuthenticatedUsers",
   ]
 }
@@ -218,6 +218,10 @@ resource "google_cloudfunctions2_function" "sync_user_groups" {
       project_id = var.project
       secret     = google_secret_manager_secret.customer_id_secret_key.secret_id
       version    = "latest"
+    }
+    environment_variables = {
+      USER_GROUPS_DATASET = google_bigquery_dataset.user_groups.dataset_id
+      USER_GROUPS_TABLE   = google_bigquery_table.user_groups.table_id
     }
   }
 }
