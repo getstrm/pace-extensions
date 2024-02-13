@@ -206,7 +206,7 @@ resource "google_cloudfunctions2_function" "sync_user_groups" {
     available_memory   = "256M"
     timeout_seconds    = 60
     max_instance_count = 100
-    ingress_settings   = "ALLOW_ALL"
+    ingress_settings   = "ALLOW_INTERNAL_ONLY"
     secret_environment_variables {
       key        = "SERVICE_ACCOUNT_KEY"
       project_id = var.project
