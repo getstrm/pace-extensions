@@ -15,7 +15,7 @@ resource "google_service_account" "principal_sync" {
   project      = var.project
   account_id   = "principal-sync"
   display_name = "Principal Sync Service Account"
-  description  = "Service Account that is allowed to list groups and update the user groups table."
+  description  = "Service Account that is allowed to list groups and update the user groups table in BigQuery."
 }
 
 resource "google_service_account_key" "principal_sync_key" {
