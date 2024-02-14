@@ -176,6 +176,11 @@ resource "google_storage_bucket_object" "function_source" {
 }
 
 resource "google_cloudfunctions2_function" "sync_user_groups" {
+  lifecycle {
+    ignore_changes = [
+      build_config[0].docker_repository
+    ]
+  }
   name        = "sync-user-groups"
   location    = var.region
   description = "Sync user groups table in bigquery"
@@ -196,11 +201,6 @@ resource "google_cloudfunctions2_function" "sync_user_groups" {
         object = google_storage_bucket_object.function_source.name
       }
     }
-  }
-  lifecycle {
-    ignore_changes = [
-      build_config[0].docker_repository
-    ]
   }
   service_config {
     available_memory   = "256M"
