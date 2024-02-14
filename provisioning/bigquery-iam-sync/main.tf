@@ -112,7 +112,7 @@ resource "time_sleep" "wait_30_seconds" {
 }
 
 resource "googleworkspace_role_assignment" "principal_sync_groups_admin" {
-  depends_on = [time_sleep.wait_30_seconds, google_project_iam_member.principal_sync]
+  depends_on = [time_sleep.wait_30_seconds]
 
   role_id     = googleworkspace_role.groups_reader_pace_sync.id
   assigned_to = google_service_account.principal_sync.unique_id
